@@ -1,233 +1,185 @@
 "use client";
 
-import { useState, useCallback, useRef } from "react";
+import { useState } from "react";
 import Link from "next/link";
 
-interface UploadItem {
-  file: File;
+interface FormState {
   title: string;
   client: string;
+  type: "image" | "video";
+  url: string;
   tags: string;
-  status: "pending" | "uploading" | "done" | "error";
-  error?: string;
-  preview: string;
 }
 
+interface AddedItem {
+  id: string;
+  title: string;
+  client: string;
+  type: "image" | "video";
+}
+
+const EMPTY: FormState = { title: "", client: "", type: "image", url: "", tags: "" };
+
 export default function AdminClient() {
-  const [items, setItems] = useState<UploadItem[]>([]);
-  const [dragging, setDragging] = useState(false);
-  const inputRef = useRef<HTMLInputElement>(null);
+  const [form, setForm] = useState<FormState>(EMPTY);
+  const [status, setStatus] = useState<"idle" | "saving" | "done" | "error">("idle");
+  const [error, setError] = useState("");
+  const [added, setAdded] = useState<AddedItem[]>([]);
 
-  const addFiles = useCallback((files: FileList | File[]) => {
-    const arr = Array.from(files);
-    const newItems: UploadItem[] = arr.map((file) => ({
-      file,
-      title: file.name.replace(/\.[^.]+$/, "").replace(/[-_]/g, " "),
-      client: "",
-      tags: "",
-      status: "pending",
-      preview: file.type.startsWith("image/") ? URL.createObjectURL(file) : "",
-    }));
-    setItems((prev) => [...prev, ...newItems]);
-  }, []);
+  const set = (field: keyof FormState, value: string) =>
+    setForm((prev) => ({ ...prev, [field]: value }));
 
-  const onDrop = useCallback(
-    (e: React.DragEvent) => {
-      e.preventDefault();
-      setDragging(false);
-      addFiles(e.dataTransfer.files);
-    },
-    [addFiles]
-  );
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setStatus("saving");
+    setError("");
 
-  const updateItem = (index: number, field: keyof UploadItem, value: string) => {
-    setItems((prev) => prev.map((item, i) => (i === index ? { ...item, [field]: value } : item)));
-  };
-
-  const removeItem = (index: number) => {
-    setItems((prev) => prev.filter((_, i) => i !== index));
-  };
-
-  const uploadAll = async () => {
-    for (let i = 0; i < items.length; i++) {
-      if (items[i].status !== "pending") continue;
-      if (!items[i].client.trim()) {
-        setItems((prev) =>
-          prev.map((item, idx) =>
-            idx === i ? { ...item, status: "error", error: "Client name is required" } : item
-          )
-        );
-        continue;
-      }
-
-      setItems((prev) =>
-        prev.map((item, idx) => (idx === i ? { ...item, status: "uploading" } : item))
-      );
-
-      const fd = new FormData();
-      fd.append("file", items[i].file);
-      fd.append("title", items[i].title || items[i].file.name);
-      fd.append("client", items[i].client);
-      fd.append("tags", items[i].tags);
-
-      try {
-        const res = await fetch("/api/upload", { method: "POST", body: fd });
-        const data = await res.json();
-        if (!res.ok) throw new Error(data.error || "Upload failed");
-        setItems((prev) =>
-          prev.map((item, idx) => (idx === i ? { ...item, status: "done" } : item))
-        );
-      } catch (err: unknown) {
-        const message = err instanceof Error ? err.message : "Upload failed";
-        setItems((prev) =>
-          prev.map((item, idx) => (idx === i ? { ...item, status: "error", error: message } : item))
-        );
-      }
+    try {
+      const res = await fetch("/api/upload", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          title: form.title,
+          client: form.client,
+          type: form.type,
+          url: form.url,
+          tags: form.tags.split(",").map((t) => t.trim()).filter(Boolean),
+        }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || "Failed to save");
+      setAdded((prev) => [...prev, data.item]);
+      setForm(EMPTY);
+      setStatus("idle");
+    } catch (err: unknown) {
+      setError(err instanceof Error ? err.message : "Failed to save");
+      setStatus("error");
     }
   };
-
-  const pendingCount = items.filter((i) => i.status === "pending").length;
 
   return (
     <div className="min-h-screen bg-[#0A0A0A] text-white">
       {/* Header */}
       <header className="sticky top-0 z-10 border-b border-white/10 bg-[#0A0A0A]/90 backdrop-blur px-6 py-4 flex items-center justify-between">
         <div className="flex items-center gap-4">
-          <span className="text-xl font-bold tracking-tight">
-            Social<span className="text-[#2563EB]">fin</span>
-          </span>
+          <div
+            className="w-8 h-8 rounded-lg flex items-center justify-center text-white font-bold text-sm"
+            style={{ background: "linear-gradient(135deg, #2563EB 0%, #1D4ED8 100%)" }}
+          >
+            S
+          </div>
+          <span className="font-bold tracking-tight">Social<span className="text-[#2563EB]">fin</span></span>
           <span className="text-white/30">/</span>
-          <span className="text-white/60 text-sm">Upload Creatives</span>
+          <span className="text-white/50 text-sm">Add Creative</span>
         </div>
-        <Link
-          href="/"
-          className="text-sm text-white/50 hover:text-white transition-colors"
-        >
-          ← Back to Dashboard
+        <Link href="/" className="text-sm text-white/40 hover:text-white transition-colors">
+          ← Dashboard
         </Link>
       </header>
 
-      <div className="max-w-4xl mx-auto px-6 py-10">
-        {/* Drop zone */}
-        <div
-          onDragOver={(e) => { e.preventDefault(); setDragging(true); }}
-          onDragLeave={() => setDragging(false)}
-          onDrop={onDrop}
-          onClick={() => inputRef.current?.click()}
-          className={`cursor-pointer rounded-2xl border-2 border-dashed transition-all p-14 text-center mb-8 ${
-            dragging
-              ? "border-[#2563EB] bg-[#2563EB]/10"
-              : "border-white/20 hover:border-white/40 hover:bg-white/5"
-          }`}
-        >
-          <div className="text-5xl mb-4">+</div>
-          <p className="text-white/70 text-lg font-medium">Drop images & videos here</p>
-          <p className="text-white/30 text-sm mt-1">or click to browse — JPG, PNG, GIF, WEBP, MP4, MOV, WEBM</p>
-          <input
-            ref={inputRef}
-            type="file"
-            multiple
-            accept="image/*,video/*"
-            className="hidden"
-            onChange={(e) => e.target.files && addFiles(e.target.files)}
-          />
-        </div>
+      <div className="max-w-xl mx-auto px-6 py-10">
+        <h1 className="text-2xl font-bold mb-2">Add a Creative</h1>
+        <p className="text-white/40 text-sm mb-8">
+          Upload your file to Google Drive, set sharing to <strong className="text-white/60">"Anyone with the link"</strong>, then paste the link here.
+        </p>
 
-        {/* File list */}
-        {items.length > 0 && (
-          <>
-            <div className="space-y-4 mb-8">
-              {items.map((item, i) => (
-                <div
-                  key={i}
-                  className={`rounded-xl border p-4 flex gap-4 items-start transition-colors ${
-                    item.status === "done"
-                      ? "border-green-500/30 bg-green-500/5"
-                      : item.status === "error"
-                      ? "border-red-500/30 bg-red-500/5"
-                      : "border-white/10 bg-white/5"
-                  }`}
-                >
-                  {/* Preview */}
-                  <div className="w-20 h-20 rounded-lg overflow-hidden bg-white/10 flex-shrink-0 flex items-center justify-center">
-                    {item.preview ? (
-                      <img src={item.preview} alt="" className="w-full h-full object-cover" />
-                    ) : (
-                      <span className="text-2xl">▶</span>
-                    )}
-                  </div>
+        <form onSubmit={handleSubmit} className="space-y-4">
+          <div>
+            <label className="block text-xs font-medium text-white/50 mb-1.5">Google Drive URL *</label>
+            <input
+              type="url"
+              required
+              placeholder="https://drive.google.com/file/d/..."
+              value={form.url}
+              onChange={(e) => set("url", e.target.value)}
+              className="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-3 text-sm text-white placeholder-white/20 outline-none focus:border-[#2563EB] focus:ring-1 focus:ring-[#2563EB] transition-colors"
+            />
+          </div>
 
-                  {/* Fields */}
-                  <div className="flex-1 grid grid-cols-3 gap-3">
-                    <input
-                      type="text"
-                      placeholder="Title"
-                      value={item.title}
-                      onChange={(e) => updateItem(i, "title", e.target.value)}
-                      disabled={item.status !== "pending"}
-                      className="col-span-2 bg-white/10 rounded-lg px-3 py-2 text-sm text-white placeholder-white/30 outline-none focus:ring-1 focus:ring-[#2563EB] disabled:opacity-50"
-                    />
-                    <input
-                      type="text"
-                      placeholder="Client *"
-                      value={item.client}
-                      onChange={(e) => updateItem(i, "client", e.target.value)}
-                      disabled={item.status !== "pending"}
-                      className="bg-white/10 rounded-lg px-3 py-2 text-sm text-white placeholder-white/30 outline-none focus:ring-1 focus:ring-[#2563EB] disabled:opacity-50"
-                    />
-                    <input
-                      type="text"
-                      placeholder="Tags (comma separated)"
-                      value={item.tags}
-                      onChange={(e) => updateItem(i, "tags", e.target.value)}
-                      disabled={item.status !== "pending"}
-                      className="col-span-2 bg-white/10 rounded-lg px-3 py-2 text-sm text-white placeholder-white/30 outline-none focus:ring-1 focus:ring-[#2563EB] disabled:opacity-50"
-                    />
-                    <div className="flex items-center justify-end">
-                      {item.status === "pending" && (
-                        <button
-                          onClick={() => removeItem(i)}
-                          className="text-white/30 hover:text-red-400 text-sm transition-colors"
-                        >
-                          Remove
-                        </button>
-                      )}
-                      {item.status === "uploading" && (
-                        <span className="text-[#2563EB] text-sm animate-pulse">Uploading…</span>
-                      )}
-                      {item.status === "done" && (
-                        <span className="text-green-400 text-sm">✓ Uploaded</span>
-                      )}
-                      {item.status === "error" && (
-                        <span className="text-red-400 text-xs">{item.error}</span>
-                      )}
-                    </div>
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <label className="block text-xs font-medium text-white/50 mb-1.5">Title *</label>
+              <input
+                type="text"
+                required
+                placeholder="Campaign name"
+                value={form.title}
+                onChange={(e) => set("title", e.target.value)}
+                className="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-3 text-sm text-white placeholder-white/20 outline-none focus:border-[#2563EB] focus:ring-1 focus:ring-[#2563EB] transition-colors"
+              />
+            </div>
+            <div>
+              <label className="block text-xs font-medium text-white/50 mb-1.5">Client *</label>
+              <input
+                type="text"
+                required
+                placeholder="Client name"
+                value={form.client}
+                onChange={(e) => set("client", e.target.value)}
+                className="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-3 text-sm text-white placeholder-white/20 outline-none focus:border-[#2563EB] focus:ring-1 focus:ring-[#2563EB] transition-colors"
+              />
+            </div>
+          </div>
+
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <label className="block text-xs font-medium text-white/50 mb-1.5">Type *</label>
+              <select
+                value={form.type}
+                onChange={(e) => set("type", e.target.value as "image" | "video")}
+                className="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-3 text-sm text-white outline-none focus:border-[#2563EB] focus:ring-1 focus:ring-[#2563EB] transition-colors"
+              >
+                <option value="image">Image</option>
+                <option value="video">Video</option>
+              </select>
+            </div>
+            <div>
+              <label className="block text-xs font-medium text-white/50 mb-1.5">Tags</label>
+              <input
+                type="text"
+                placeholder="instagram, static"
+                value={form.tags}
+                onChange={(e) => set("tags", e.target.value)}
+                className="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-3 text-sm text-white placeholder-white/20 outline-none focus:border-[#2563EB] focus:ring-1 focus:ring-[#2563EB] transition-colors"
+              />
+            </div>
+          </div>
+
+          {status === "error" && (
+            <p className="text-red-400 text-sm">{error}</p>
+          )}
+
+          <button
+            type="submit"
+            disabled={status === "saving"}
+            className="w-full bg-[#2563EB] hover:bg-[#1d4ed8] disabled:opacity-50 text-white font-semibold py-3 rounded-xl transition-colors"
+          >
+            {status === "saving" ? "Saving…" : "Add to Dashboard"}
+          </button>
+        </form>
+
+        {/* Added items */}
+        {added.length > 0 && (
+          <div className="mt-10">
+            <p className="text-xs font-medium text-white/40 uppercase tracking-widest mb-3">Added this session</p>
+            <div className="space-y-2">
+              {added.map((item) => (
+                <div key={item.id} className="flex items-center justify-between rounded-lg bg-white/5 border border-white/10 px-4 py-3">
+                  <div>
+                    <p className="text-sm font-medium text-white">{item.title}</p>
+                    <p className="text-xs text-white/40">{item.client} · {item.type}</p>
                   </div>
+                  <span className="text-green-400 text-xs">✓ Added</span>
                 </div>
               ))}
             </div>
-
-            {pendingCount > 0 && (
-              <button
-                onClick={uploadAll}
-                className="w-full bg-[#2563EB] hover:bg-[#1d4ed8] text-white font-semibold py-3 rounded-xl transition-colors"
-              >
-                Upload {pendingCount} file{pendingCount !== 1 ? "s" : ""}
-              </button>
-            )}
-
-            {pendingCount === 0 && items.every((i) => i.status === "done") && (
-              <div className="text-center py-4">
-                <p className="text-green-400 font-medium mb-4">All files uploaded successfully!</p>
-                <Link
-                  href="/"
-                  className="inline-block bg-[#2563EB] hover:bg-[#1d4ed8] text-white font-semibold px-6 py-3 rounded-xl transition-colors"
-                >
-                  View Dashboard →
-                </Link>
-              </div>
-            )}
-          </>
+            <Link
+              href="/"
+              className="mt-4 inline-block w-full text-center bg-white/5 hover:bg-white/10 border border-white/10 text-white font-medium py-3 rounded-xl transition-colors text-sm"
+            >
+              View Dashboard →
+            </Link>
+          </div>
         )}
       </div>
     </div>

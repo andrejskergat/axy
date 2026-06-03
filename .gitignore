@@ -33,9 +33,6 @@ yarn-error.log*
 *.tsbuildinfo
 next-env.d.ts
 
-# Socialfin — sensitive data
-data/auth.json
-
-# Media files (large assets)
+# Media files uploaded locally (not needed with Google Drive)
 public/media/*
 !public/media/.gitkeep

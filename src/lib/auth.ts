@@ -11,7 +11,7 @@ export interface MediaItem {
   title: string;
   client: string;
   type: "image" | "video";
-  filename: string;
+  url: string;
   tags: string[];
 }
 

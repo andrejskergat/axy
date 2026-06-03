@@ -3,7 +3,6 @@ import fs from "fs";
 import path from "path";
 import { validateSession, getMediaData, SESSION_COOKIE, MediaItem } from "@/lib/auth";
 
-const MEDIA_DIR = path.join(process.cwd(), "public", "media");
 const MEDIA_PATH = path.join(process.cwd(), "data", "media.json");
 
 export async function POST(request: NextRequest) {
@@ -12,41 +11,25 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
-  const formData = await request.formData();
-  const file = formData.get("file") as File | null;
-  const title = formData.get("title") as string;
-  const client = formData.get("client") as string;
-  const tagsRaw = formData.get("tags") as string;
+  const body = await request.json();
+  const { title, client, type, url, tags } = body;
 
-  if (!file || !title || !client) {
+  if (!title || !client || !type || !url) {
     return NextResponse.json({ error: "Missing required fields" }, { status: 400 });
   }
 
-  const allowedTypes = ["image/jpeg", "image/png", "image/gif", "image/webp", "video/mp4", "video/quicktime", "video/webm"];
-  if (!allowedTypes.includes(file.type)) {
-    return NextResponse.json({ error: "Unsupported file type" }, { status: 400 });
+  if (type !== "image" && type !== "video") {
+    return NextResponse.json({ error: "Type must be image or video" }, { status: 400 });
   }
 
-  const ext = file.name.split(".").pop()?.toLowerCase() || "";
-  const safeName = `${Date.now()}-${file.name.replace(/[^a-zA-Z0-9._-]/g, "_")}`;
-  const destPath = path.join(MEDIA_DIR, safeName);
-
-  const buffer = Buffer.from(await file.arrayBuffer());
-  fs.mkdirSync(MEDIA_DIR, { recursive: true });
-  fs.writeFileSync(destPath, buffer);
-
-  const isVideo = file.type.startsWith("video/");
-  const tags = tagsRaw ? tagsRaw.split(",").map((t) => t.trim()).filter(Boolean) : [];
-
   const existing = getMediaData();
-  const newId = String(Date.now());
   const newItem: MediaItem = {
-    id: newId,
+    id: String(Date.now()),
     title,
     client,
-    type: isVideo ? "video" : "image",
-    filename: safeName,
-    tags,
+    type,
+    url,
+    tags: Array.isArray(tags) ? tags : [],
   };
 
   fs.writeFileSync(MEDIA_PATH, JSON.stringify([...existing, newItem], null, 2));
