@@ -5,7 +5,7 @@ import { useState } from "react";
 
 function gdriveDirect(url: string): string {
   const match = url.match(/\/file\/d\/([^/]+)/);
-  if (match) return `https://drive.google.com/uc?export=view&id=${match[1]}`;
+  if (match) return `https://drive.google.com/thumbnail?id=${match[1]}&sz=w1600`;
   return url;
 }
 
