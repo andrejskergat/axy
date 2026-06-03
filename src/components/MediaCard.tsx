@@ -3,52 +3,42 @@
 import { MediaItem } from "@/lib/auth";
 import { useState } from "react";
 
-interface MediaCardProps {
-  item: MediaItem;
-}
-
 function gdriveDirect(url: string): string {
-  // Convert share URL to direct embed URL
-  // https://drive.google.com/file/d/FILE_ID/view -> https://drive.google.com/uc?export=view&id=FILE_ID
   const match = url.match(/\/file\/d\/([^/]+)/);
   if (match) return `https://drive.google.com/uc?export=view&id=${match[1]}`;
   return url;
 }
 
 function gdriveEmbed(url: string): string {
-  // https://drive.google.com/file/d/FILE_ID/view -> https://drive.google.com/file/d/FILE_ID/preview
   const match = url.match(/\/file\/d\/([^/]+)/);
   if (match) return `https://drive.google.com/file/d/${match[1]}/preview`;
   return url;
 }
 
-export default function MediaCard({ item }: MediaCardProps) {
+export default function MediaCard({ item }: { item: MediaItem }) {
   const [error, setError] = useState(false);
 
   return (
     <div
-      className="group rounded-xl overflow-hidden flex flex-col transition-all duration-300"
+      className="rounded-xl overflow-hidden flex flex-col transition-all duration-200"
       style={{
-        background: "#111111",
-        border: "1px solid rgba(255,255,255,0.06)",
-        boxShadow: "0 4px 16px rgba(0,0,0,0.4)",
-        transform: "translateY(0) scale(1)",
+        background: "#fff",
+        border: "1px solid rgba(18,33,58,0.08)",
+        boxShadow: "0 2px 8px rgba(18,33,58,0.06)",
       }}
       onMouseEnter={(e) => {
-        const el = e.currentTarget as HTMLDivElement;
-        el.style.transform = "translateY(-4px) scale(1.01)";
-        el.style.boxShadow = "0 16px 40px rgba(0,0,0,0.6), 0 0 0 1px rgba(37,99,235,0.2)";
+        (e.currentTarget as HTMLDivElement).style.boxShadow = "0 8px 24px rgba(18,33,58,0.12)";
+        (e.currentTarget as HTMLDivElement).style.transform = "translateY(-2px)";
       }}
       onMouseLeave={(e) => {
-        const el = e.currentTarget as HTMLDivElement;
-        el.style.transform = "translateY(0) scale(1)";
-        el.style.boxShadow = "0 4px 16px rgba(0,0,0,0.4)";
+        (e.currentTarget as HTMLDivElement).style.boxShadow = "0 2px 8px rgba(18,33,58,0.06)";
+        (e.currentTarget as HTMLDivElement).style.transform = "translateY(0)";
       }}
     >
-      {/* Media area */}
-      <div className="relative w-full overflow-hidden" style={{ background: "#0D0D0D", minHeight: "180px" }}>
+      {/* Media */}
+      <div className="relative w-full overflow-hidden" style={{ background: "#F6F3EE", minHeight: "180px" }}>
         {error ? (
-          <PlaceholderMedia label={item.type === "video" ? "Video" : "Image"} />
+          <Placeholder label={item.type} />
         ) : item.type === "image" ? (
           // eslint-disable-next-line @next/next/no-img-element
           <img
@@ -64,7 +54,6 @@ export default function MediaCard({ item }: MediaCardProps) {
             className="w-full"
             style={{ minHeight: "220px", border: "none", display: "block" }}
             allow="autoplay"
-            onError={() => setError(true)}
           />
         )}
 
@@ -73,8 +62,8 @@ export default function MediaCard({ item }: MediaCardProps) {
           className="absolute top-2.5 left-2.5 px-2 py-0.5 rounded-full text-xs font-semibold uppercase tracking-wide"
           style={
             item.type === "video"
-              ? { background: "rgba(37,99,235,0.85)", color: "#fff", backdropFilter: "blur(4px)" }
-              : { background: "rgba(0,0,0,0.55)", color: "rgba(255,255,255,0.7)", backdropFilter: "blur(4px)" }
+              ? { background: "#1B6BF0", color: "#fff" }
+              : { background: "rgba(255,255,255,0.85)", color: "#12213A" }
           }
         >
           {item.type}
@@ -82,27 +71,18 @@ export default function MediaCard({ item }: MediaCardProps) {
       </div>
 
       {/* Footer */}
-      <div className="p-4 flex flex-col gap-2 flex-1">
-        <div>
-          <p className="font-semibold text-sm text-white leading-snug truncate" title={item.title}>
-            {item.title}
-          </p>
-          <p className="text-xs mt-0.5 truncate" style={{ color: "#2563EB" }}>
-            {item.client}
-          </p>
-        </div>
+      <div className="p-4 flex flex-col gap-2">
+        <p className="font-semibold text-sm truncate" style={{ color: "#12213A" }} title={item.title}>
+          {item.title}
+        </p>
 
         {item.tags.length > 0 && (
-          <div className="flex flex-wrap gap-1.5 mt-auto pt-1">
+          <div className="flex flex-wrap gap-1.5">
             {item.tags.map((tag) => (
               <span
                 key={tag}
                 className="px-2 py-0.5 rounded-full text-xs font-medium"
-                style={{
-                  background: "rgba(255,255,255,0.05)",
-                  color: "#777",
-                  border: "1px solid rgba(255,255,255,0.07)",
-                }}
+                style={{ background: "#F0EBE1", color: "#7A7A7A" }}
               >
                 {tag}
               </span>
@@ -114,19 +94,10 @@ export default function MediaCard({ item }: MediaCardProps) {
   );
 }
 
-function PlaceholderMedia({ label }: { label: string }) {
+function Placeholder({ label }: { label: string }) {
   return (
-    <div className="flex flex-col items-center justify-center gap-2" style={{ minHeight: "180px", color: "#333" }}>
-      {label === "Video" ? (
-        <svg className="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z" />
-        </svg>
-      ) : (
-        <svg className="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 16M14 8h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
-        </svg>
-      )}
-      <span className="text-xs">Media unavailable</span>
+    <div className="flex items-center justify-center" style={{ minHeight: "180px", color: "#C5BFB5" }}>
+      <span className="text-sm">{label === "video" ? "▶ Video unavailable" : "Image unavailable"}</span>
     </div>
   );
 }
