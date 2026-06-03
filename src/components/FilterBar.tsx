@@ -1,10 +1,7 @@
 "use client";
 
 interface FilterBarProps {
-  clients: string[];
-  selectedClient: string;
   selectedType: "all" | "image" | "video";
-  onClientChange: (client: string) => void;
   onTypeChange: (type: "all" | "image" | "video") => void;
   totalCount: number;
   filteredCount: number;
@@ -17,17 +14,14 @@ const TYPE_OPTIONS: { value: "all" | "image" | "video"; label: string }[] = [
 ];
 
 export default function FilterBar({
-  clients,
-  selectedClient,
   selectedType,
-  onClientChange,
   onTypeChange,
   totalCount,
   filteredCount,
 }: FilterBarProps) {
   return (
     <div
-      className="flex flex-col sm:flex-row sm:items-center gap-3 px-6 py-4"
+      className="flex items-center gap-3 px-6 py-4"
       style={{ borderBottom: "1px solid rgba(255,255,255,0.05)" }}
     >
       {/* Type pills */}
@@ -55,45 +49,12 @@ export default function FilterBar({
         ))}
       </div>
 
-      {/* Client filter */}
-      <div className="relative">
-        <select
-          value={selectedClient}
-          onChange={(e) => onClientChange(e.target.value)}
-          className="appearance-none pl-3 pr-8 py-2 rounded-lg text-xs font-medium outline-none transition-all duration-150"
-          style={{
-            background: "rgba(255,255,255,0.04)",
-            border: "1px solid rgba(255,255,255,0.06)",
-            color: selectedClient ? "#fff" : "#666",
-            cursor: "pointer",
-          }}
-        >
-          <option value="">All clients</option>
-          {clients.map((c) => (
-            <option key={c} value={c} style={{ background: "#111" }}>
-              {c}
-            </option>
-          ))}
-        </select>
-        <svg
-          className="pointer-events-none absolute right-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5"
-          style={{ color: "#555" }}
-          fill="none"
-          stroke="currentColor"
-          viewBox="0 0 24 24"
-        >
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-        </svg>
-      </div>
-
       {/* Count */}
-      <div className="sm:ml-auto text-xs" style={{ color: "#444" }}>
+      <div className="ml-auto text-xs" style={{ color: "#444" }}>
         {filteredCount === totalCount ? (
           <span>{totalCount} creative{totalCount !== 1 ? "s" : ""}</span>
         ) : (
-          <span>
-            {filteredCount} of {totalCount} creative{totalCount !== 1 ? "s" : ""}
-          </span>
+          <span>{filteredCount} of {totalCount} creative{totalCount !== 1 ? "s" : ""}</span>
         )}
       </div>
     </div>
