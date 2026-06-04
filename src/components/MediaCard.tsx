@@ -24,27 +24,29 @@ function gdriveDirect(url: string): string {
 function ImageModal({ item, onClose }: { item: MediaItem; onClose: () => void }) {
   return (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center p-4"
-      style={{ background: "rgba(18,33,58,0.85)", backdropFilter: "blur(6px)" }}
+      className="fixed inset-0 z-50 flex items-center justify-center p-6"
+      style={{ background: "rgba(18,33,58,0.9)", backdropFilter: "blur(8px)" }}
       onClick={onClose}
     >
+      <button
+        onClick={onClose}
+        className="absolute top-4 right-4 z-10 w-9 h-9 rounded-full flex items-center justify-center text-sm font-bold"
+        style={{ background: "rgba(255,255,255,0.15)", color: "#fff" }}
+      >
+        ✕
+      </button>
       <div
-        className="relative max-w-4xl w-full rounded-2xl overflow-hidden"
-        style={{ boxShadow: "0 24px 64px rgba(0,0,0,0.5)" }}
+        className="relative flex flex-col items-center"
+        style={{ maxWidth: "90vw", maxHeight: "90vh" }}
         onClick={(e) => e.stopPropagation()}
       >
-        <button
-          onClick={onClose}
-          className="absolute top-3 right-3 z-10 w-8 h-8 rounded-full flex items-center justify-center"
-          style={{ background: "rgba(0,0,0,0.6)", color: "#fff" }}
-        >
-          ✕
-        </button>
         {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img src={gdriveDirect(item.url)} alt={item.title} style={{ width: "100%", height: "auto", display: "block" }} />
-        <div className="px-4 py-3" style={{ background: "#fff" }}>
-          <p className="text-sm font-semibold" style={{ color: "#12213A" }}>{item.title}</p>
-        </div>
+        <img
+          src={gdriveDirect(item.url)}
+          alt={item.title}
+          style={{ maxWidth: "90vw", maxHeight: "80vh", width: "auto", height: "auto", display: "block", borderRadius: "12px", boxShadow: "0 24px 64px rgba(0,0,0,0.5)" }}
+        />
+        <p className="mt-3 text-sm font-medium" style={{ color: "rgba(255,255,255,0.8)" }}>{item.title}</p>
       </div>
     </div>
   );
