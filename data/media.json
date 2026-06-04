@@ -5,7 +5,10 @@
     "client": "OCH",
     "type": "video",
     "url": "https://drive.google.com/file/d/1NgNhd1EvFvUHq2eum7i1g-HiHHJqihSk/view?usp=sharing",
-    "tags": ["facebook", "video"]
+    "tags": [
+      "facebook",
+      "video"
+    ]
   },
   {
     "id": "2",
@@ -13,7 +16,10 @@
     "client": "Y Suites",
     "type": "video",
     "url": "https://drive.google.com/file/d/1XuHf88DifShzLCOI20-hFy0nP7gc8I7D/view?usp=sharing",
-    "tags": ["video", "tour"]
+    "tags": [
+      "video",
+      "tour"
+    ]
   },
   {
     "id": "3",
@@ -21,7 +27,9 @@
     "client": "PG",
     "type": "video",
     "url": "https://drive.google.com/file/d/1JkVRXQezdYdHxAujJZb5WbVQUrV0oMMG/view?usp=sharing",
-    "tags": ["video"]
+    "tags": [
+      "video"
+    ]
   },
   {
     "id": "4",
@@ -29,7 +37,9 @@
     "client": "Zero to Game",
     "type": "image",
     "url": "https://drive.google.com/file/d/1oFt9P0J8izKEmUlA2E33SjSRPRZuiA2E/view?usp=sharing",
-    "tags": ["static"]
+    "tags": [
+      "static"
+    ]
   },
   {
     "id": "5",
@@ -37,7 +47,9 @@
     "client": "Supplement",
     "type": "image",
     "url": "https://drive.google.com/file/d/1jSUjzhOItuDeA_Vwb-65W6CU1cD8M_2r/view?usp=sharing",
-    "tags": ["static"]
+    "tags": [
+      "static"
+    ]
   },
   {
     "id": "6",
@@ -45,7 +57,10 @@
     "client": "Game Built",
     "type": "image",
     "url": "https://drive.google.com/file/d/1aQAORHO6rMpJHW7VKpAKCD-xN1uootww/view?usp=sharing",
-    "tags": ["facebook", "static"]
+    "tags": [
+      "facebook",
+      "static"
+    ]
   },
   {
     "id": "7",
@@ -53,7 +68,9 @@
     "client": "Online Coding",
     "type": "image",
     "url": "https://drive.google.com/file/d/1mge7jqCqSD6KLCsdEyrNboDKRZ-2kK7t/view?usp=sharing",
-    "tags": ["static"]
+    "tags": [
+      "static"
+    ]
   },
   {
     "id": "8",
@@ -61,7 +78,10 @@
     "client": "Anabelle",
     "type": "image",
     "url": "https://drive.google.com/file/d/1SFKkQMU898Lhoornwszv2jiV-gac2vA3/view?usp=sharing",
-    "tags": ["facebook", "static"]
+    "tags": [
+      "facebook",
+      "static"
+    ]
   },
   {
     "id": "9",
@@ -69,7 +89,9 @@
     "client": "Anabelle",
     "type": "image",
     "url": "https://drive.google.com/file/d/14wjNbxD-Jpk8r4O_Fybhym549_N7J-YM/view?usp=sharing",
-    "tags": ["static"]
+    "tags": [
+      "static"
+    ]
   },
   {
     "id": "10",
@@ -77,7 +99,9 @@
     "client": "Tamasha",
     "type": "image",
     "url": "https://drive.google.com/file/d/16ORB19HlJs3YCaEFW6O60t_6z1dEQ5jn/view?usp=sharing",
-    "tags": ["static"]
+    "tags": [
+      "static"
+    ]
   },
   {
     "id": "11",
@@ -85,7 +109,10 @@
     "client": "Socialfin",
     "type": "image",
     "url": "https://drive.google.com/file/d/1PBi9WgUQ_DmAwBgFqMzP3RizqVLFRn1I/view?usp=sharing",
-    "tags": ["facebook", "static"]
+    "tags": [
+      "facebook",
+      "static"
+    ]
   },
   {
     "id": "12",
@@ -93,7 +120,10 @@
     "client": "KK",
     "type": "image",
     "url": "https://drive.google.com/file/d/1SqOUEOr3fAt70Sq-74Qq_CKX57CMQjRg/view?usp=sharing",
-    "tags": ["static", "split"]
+    "tags": [
+      "static",
+      "split"
+    ]
   },
   {
     "id": "13",
@@ -101,7 +131,9 @@
     "client": "Tamasha",
     "type": "image",
     "url": "https://drive.google.com/file/d/11N5ZQFii4YuoqTiinzo4BhRghia5yEYo/view?usp=sharing",
-    "tags": ["static"]
+    "tags": [
+      "static"
+    ]
   },
   {
     "id": "14",
@@ -109,6 +141,16 @@
     "client": "LLC",
     "type": "image",
     "url": "https://drive.google.com/file/d/1mOzuJLvjrHn1o-DK3RVD2OWZ0jkT7USq/view?usp=sharing",
-    "tags": ["static"]
+    "tags": [
+      "static"
+    ]
+  },
+  {
+    "id": "1780557419875",
+    "title": "LOSH",
+    "client": "",
+    "type": "video",
+    "url": "https://drive.google.com/file/d/1WNMtjS0cpoUuZ03QT9bXxwfmqHYWkKnv/view?usp=sharing",
+    "tags": []
   }
 ]
