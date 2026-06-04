@@ -73,6 +73,21 @@ function VideoModal({ item, onClose }: { item: MediaItem; onClose: () => void })
 export default function MediaCard({ item }: { item: MediaItem }) {
   const [imgError, setImgError] = useState(false);
   const [showModal, setShowModal] = useState(false);
+  const [editing, setEditing] = useState(false);
+  const [title, setTitle] = useState(item.title);
+  const [saving, setSaving] = useState(false);
+
+  async function saveTitle() {
+    if (title.trim() === item.title || !title.trim()) { setEditing(false); setTitle(item.title); return; }
+    setSaving(true);
+    await fetch("/api/update", {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ id: item.id, title: title.trim() }),
+    });
+    setSaving(false);
+    setEditing(false);
+  }
 
   return (
     <>
@@ -155,9 +170,26 @@ export default function MediaCard({ item }: { item: MediaItem }) {
 
         {/* Footer */}
         <div className="p-3 flex flex-col gap-1.5">
-          <p className="font-semibold text-xs truncate" style={{ color: "#12213A" }} title={item.title}>
-            {item.title}
-          </p>
+          {editing ? (
+            <input
+              autoFocus
+              value={title}
+              onChange={(e) => setTitle(e.target.value)}
+              onBlur={saveTitle}
+              onKeyDown={(e) => { if (e.key === "Enter") saveTitle(); if (e.key === "Escape") { setEditing(false); setTitle(item.title); } }}
+              className="text-xs font-semibold w-full outline-none rounded px-1"
+              style={{ color: "#12213A", border: "1.5px solid #1B6BF0", background: "#F6F3EE" }}
+            />
+          ) : (
+            <p
+              className="font-semibold text-xs truncate cursor-pointer hover:text-[#1B6BF0] transition-colors"
+              style={{ color: saving ? "#A8A29E" : "#12213A" }}
+              title="Click to edit"
+              onClick={() => setEditing(true)}
+            >
+              {saving ? "Saving…" : title}
+            </p>
+          )}
           {item.tags.length > 0 && (
             <div className="flex flex-wrap gap-1">
               {item.tags.map((tag) => (

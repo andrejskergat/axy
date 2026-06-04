@@ -34,7 +34,7 @@ export default function Header() {
           <span style={{ color: "#1B6BF0" }}>social</span>fin
         </span>
         <span className="text-xs font-medium px-2 py-0.5 rounded-full" style={{ background: "rgba(27,107,240,0.08)", color: "#1B6BF0" }}>
-          Ad Creatives
+          Ad Creatives Library
         </span>
       </div>
 
