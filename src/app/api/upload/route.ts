@@ -14,7 +14,7 @@ export async function POST(request: NextRequest) {
   const body = await request.json();
   const { title, client, type, url, tags } = body;
 
-  if (!title || !client || !type || !url) {
+  if (!title || !type || !url) {
     return NextResponse.json({ error: "Missing required fields" }, { status: 400 });
   }
 
@@ -26,7 +26,7 @@ export async function POST(request: NextRequest) {
   const newItem: MediaItem = {
     id: String(Date.now()),
     title,
-    client,
+    client: client || "",
     type,
     url,
     tags: Array.isArray(tags) ? tags : [],
