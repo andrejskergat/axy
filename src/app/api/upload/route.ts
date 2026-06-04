@@ -1,9 +1,33 @@
 import { NextRequest, NextResponse } from "next/server";
-import fs from "fs";
-import path from "path";
 import { validateSession, getMediaData, SESSION_COOKIE, MediaItem } from "@/lib/auth";
 
-const MEDIA_PATH = path.join(process.cwd(), "data", "media.json");
+const REPO = "andrejskergat/axy";
+const FILE_PATH = "data/media.json";
+const BRANCH = "claude/great-hypatia-XUQBd";
+
+async function getFileSha(): Promise<string> {
+  const token = process.env.GITHUB_TOKEN;
+  const res = await fetch(
+    `https://api.github.com/repos/${REPO}/contents/${FILE_PATH}?ref=${BRANCH}`,
+    { headers: { Authorization: `Bearer ${token}`, Accept: "application/vnd.github+json" } }
+  );
+  const data = await res.json();
+  return data.sha;
+}
+
+async function writeMediaJson(items: MediaItem[]): Promise<void> {
+  const token = process.env.GITHUB_TOKEN;
+  const sha = await getFileSha();
+  const content = Buffer.from(JSON.stringify(items, null, 2)).toString("base64");
+  await fetch(
+    `https://api.github.com/repos/${REPO}/contents/${FILE_PATH}`,
+    {
+      method: "PUT",
+      headers: { Authorization: `Bearer ${token}`, Accept: "application/vnd.github+json", "Content-Type": "application/json" },
+      body: JSON.stringify({ message: "Update media.json via dashboard", content, sha, branch: BRANCH }),
+    }
+  );
+}
 
 export async function POST(request: NextRequest) {
   const sessionPassword = request.cookies.get(SESSION_COOKIE)?.value;
@@ -11,8 +35,12 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
+  if (!process.env.GITHUB_TOKEN) {
+    return NextResponse.json({ error: "GITHUB_TOKEN not configured" }, { status: 500 });
+  }
+
   const body = await request.json();
-  const { title, client, type, url, tags } = body;
+  const { title, type, url, tags, client } = body;
 
   if (!title || !type || !url) {
     return NextResponse.json({ error: "Missing required fields" }, { status: 400 });
@@ -32,7 +60,7 @@ export async function POST(request: NextRequest) {
     tags: Array.isArray(tags) ? tags : [],
   };
 
-  fs.writeFileSync(MEDIA_PATH, JSON.stringify([...existing, newItem], null, 2));
+  await writeMediaJson([...existing, newItem]);
 
   return NextResponse.json({ success: true, item: newItem });
 }
