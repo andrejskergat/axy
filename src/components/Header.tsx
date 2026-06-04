@@ -4,7 +4,7 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 import Link from "next/link";
 
-export default function Header() {
+export default function Header({ isAdmin }: { isAdmin: boolean }) {
   const router = useRouter();
   const [loggingOut, setLoggingOut] = useState(false);
 
@@ -28,7 +28,6 @@ export default function Header() {
         borderBottom: "1px solid rgba(18,33,58,0.08)",
       }}
     >
-      {/* Logo */}
       <div className="flex items-center gap-3">
         <span className="text-xl font-bold tracking-tight" style={{ color: "#12213A" }}>
           <span style={{ color: "#1B6BF0" }}>social</span>fin
@@ -38,18 +37,19 @@ export default function Header() {
         </span>
       </div>
 
-      {/* Actions */}
       <div className="flex items-center gap-2">
-        <Link
-          href="/admin"
-          className="flex items-center gap-1.5 px-3 py-2 rounded-lg text-sm font-medium transition-colors"
-          style={{ color: "#1B6BF0", background: "rgba(27,107,240,0.08)" }}
-        >
-          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
-          </svg>
-          Add Creative
-        </Link>
+        {isAdmin && (
+          <Link
+            href="/admin"
+            className="flex items-center gap-1.5 px-3 py-2 rounded-lg text-sm font-medium transition-colors"
+            style={{ color: "#1B6BF0", background: "rgba(27,107,240,0.08)" }}
+          >
+            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+            </svg>
+            Add Creative
+          </Link>
+        )}
 
         <button
           onClick={handleLogout}

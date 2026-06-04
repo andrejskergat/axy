@@ -1,22 +1,19 @@
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
-import { validateSession, getMediaData, SESSION_COOKIE } from "@/lib/auth";
+import { validateSession, getMediaData, SESSION_COOKIE, getRoleFromSession } from "@/lib/auth";
 import DashboardClient from "@/components/DashboardClient";
 
 export default async function DashboardPage() {
   const cookieStore = cookies();
-  const sessionPassword = cookieStore.get(SESSION_COOKIE)?.value;
+  const sessionValue = cookieStore.get(SESSION_COOKIE)?.value;
 
-  if (!sessionPassword) {
-    redirect("/login");
-  }
+  if (!sessionValue) redirect("/login");
 
-  const result = validateSession(sessionPassword);
-  if (!result.valid) {
-    redirect("/login");
-  }
+  const result = validateSession(sessionValue);
+  if (!result.valid) redirect("/login");
 
+  const role = getRoleFromSession(sessionValue);
   const media = getMediaData();
 
-  return <DashboardClient initialMedia={media} />;
+  return <DashboardClient initialMedia={media} isAdmin={role === "admin"} />;
 }

@@ -16,13 +16,13 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: result.reason }, { status: 401 });
     }
 
-    const response = NextResponse.json({ success: true });
-    response.cookies.set(SESSION_COOKIE, password, {
+    const response = NextResponse.json({ success: true, role: result.role });
+    response.cookies.set(SESSION_COOKIE, `${result.role}:${password}`, {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
       sameSite: "lax",
       path: "/",
-      maxAge: 60 * 60 * 72, // 72 hours
+      maxAge: 60 * 60 * 72,
     });
 
     return response;

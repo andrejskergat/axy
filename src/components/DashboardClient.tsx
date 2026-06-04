@@ -6,7 +6,7 @@ import Header from "./Header";
 import FilterBar from "./FilterBar";
 import MediaCard from "./MediaCard";
 
-export default function DashboardClient({ initialMedia }: { initialMedia: MediaItem[] }) {
+export default function DashboardClient({ initialMedia, isAdmin }: { initialMedia: MediaItem[]; isAdmin: boolean }) {
   const [selectedType, setSelectedType] = useState<"all" | "image" | "video">("all");
 
   const filtered = useMemo(() =>
@@ -16,7 +16,7 @@ export default function DashboardClient({ initialMedia }: { initialMedia: MediaI
 
   return (
     <div className="min-h-screen" style={{ background: "#F0EBE1" }}>
-      <Header />
+      <Header isAdmin={isAdmin} />
       <main>
         {initialMedia.length === 0 ? (
           <EmptyState />
@@ -38,7 +38,7 @@ export default function DashboardClient({ initialMedia }: { initialMedia: MediaI
                 </div>
               ) : (
                 <div className="grid grid-cols-2 lg:grid-cols-5 gap-4">
-                  {filtered.map((item) => <MediaCard key={item.id} item={item} />)}
+                  {filtered.map((item) => <MediaCard key={item.id} item={item} isAdmin={isAdmin} />)}
                 </div>
               )}
             </div>

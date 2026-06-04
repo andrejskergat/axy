@@ -70,7 +70,7 @@ function VideoModal({ item, onClose }: { item: MediaItem; onClose: () => void })
   );
 }
 
-export default function MediaCard({ item }: { item: MediaItem }) {
+export default function MediaCard({ item, isAdmin }: { item: MediaItem; isAdmin: boolean }) {
   const [imgError, setImgError] = useState(false);
   const [showModal, setShowModal] = useState(false);
   const [editing, setEditing] = useState(false);
@@ -97,10 +97,12 @@ export default function MediaCard({ item }: { item: MediaItem }) {
 
       <div
         className="rounded-xl overflow-hidden flex flex-col transition-all duration-200"
+        onContextMenu={!isAdmin ? (e) => e.preventDefault() : undefined}
         style={{
           background: "#fff",
           border: "1px solid rgba(18,33,58,0.08)",
           boxShadow: "0 2px 8px rgba(18,33,58,0.06)",
+          userSelect: isAdmin ? undefined : "none",
         }}
         onMouseEnter={(e) => {
           (e.currentTarget as HTMLDivElement).style.boxShadow = "0 8px 24px rgba(18,33,58,0.12)";
@@ -170,7 +172,7 @@ export default function MediaCard({ item }: { item: MediaItem }) {
 
         {/* Footer */}
         <div className="p-3 flex flex-col gap-1.5">
-          {editing ? (
+          {isAdmin && editing ? (
             <input
               autoFocus
               value={title}
@@ -182,10 +184,10 @@ export default function MediaCard({ item }: { item: MediaItem }) {
             />
           ) : (
             <p
-              className="font-semibold text-xs truncate cursor-pointer hover:text-[#1B6BF0] transition-colors"
+              className={`font-semibold text-xs truncate transition-colors ${isAdmin ? "cursor-pointer hover:text-[#1B6BF0]" : ""}`}
               style={{ color: saving ? "#A8A29E" : "#12213A" }}
-              title="Click to edit"
-              onClick={() => setEditing(true)}
+              title={isAdmin ? "Click to edit" : item.title}
+              onClick={() => isAdmin && setEditing(true)}
             >
               {saving ? "Saving…" : title}
             </p>
