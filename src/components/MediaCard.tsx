@@ -21,6 +21,35 @@ function gdriveDirect(url: string): string {
   return url;
 }
 
+function ImageModal({ item, onClose }: { item: MediaItem; onClose: () => void }) {
+  return (
+    <div
+      className="fixed inset-0 z-50 flex items-center justify-center p-4"
+      style={{ background: "rgba(18,33,58,0.85)", backdropFilter: "blur(6px)" }}
+      onClick={onClose}
+    >
+      <div
+        className="relative max-w-4xl w-full rounded-2xl overflow-hidden"
+        style={{ boxShadow: "0 24px 64px rgba(0,0,0,0.5)" }}
+        onClick={(e) => e.stopPropagation()}
+      >
+        <button
+          onClick={onClose}
+          className="absolute top-3 right-3 z-10 w-8 h-8 rounded-full flex items-center justify-center"
+          style={{ background: "rgba(0,0,0,0.6)", color: "#fff" }}
+        >
+          ✕
+        </button>
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img src={gdriveDirect(item.url)} alt={item.title} style={{ width: "100%", height: "auto", display: "block" }} />
+        <div className="px-4 py-3" style={{ background: "#fff" }}>
+          <p className="text-sm font-semibold" style={{ color: "#12213A" }}>{item.title}</p>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 function VideoModal({ item, onClose }: { item: MediaItem; onClose: () => void }) {
   return (
     <div
@@ -70,12 +99,24 @@ function VideoModal({ item, onClose }: { item: MediaItem; onClose: () => void })
   );
 }
 
-export default function MediaCard({ item, isAdmin }: { item: MediaItem; isAdmin: boolean }) {
+export default function MediaCard({ item, isAdmin, onDeleted }: { item: MediaItem; isAdmin: boolean; onDeleted?: (id: string) => void }) {
   const [imgError, setImgError] = useState(false);
   const [showModal, setShowModal] = useState(false);
   const [editing, setEditing] = useState(false);
   const [title, setTitle] = useState(item.title);
   const [saving, setSaving] = useState(false);
+  const [confirmDelete, setConfirmDelete] = useState(false);
+  const [deleting, setDeleting] = useState(false);
+
+  async function handleDelete() {
+    setDeleting(true);
+    await fetch("/api/delete", {
+      method: "DELETE",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ id: item.id }),
+    });
+    onDeleted?.(item.id);
+  }
 
   async function saveTitle() {
     if (title.trim() === item.title || !title.trim()) { setEditing(false); setTitle(item.title); return; }
@@ -91,9 +132,8 @@ export default function MediaCard({ item, isAdmin }: { item: MediaItem; isAdmin:
 
   return (
     <>
-      {showModal && item.type === "video" && (
-        <VideoModal item={item} onClose={() => setShowModal(false)} />
-      )}
+      {showModal && item.type === "video" && <VideoModal item={item} onClose={() => setShowModal(false)} />}
+      {showModal && item.type === "image" && <ImageModal item={item} onClose={() => setShowModal(false)} />}
 
       <div
         className="rounded-xl overflow-hidden flex flex-col transition-all duration-200"
@@ -119,13 +159,15 @@ export default function MediaCard({ item, isAdmin }: { item: MediaItem; isAdmin:
             imgError ? (
               <Placeholder label="image" url={item.url} />
             ) : (
-              // eslint-disable-next-line @next/next/no-img-element
-              <img
-                src={gdriveDirect(item.url)}
-                alt={item.title}
-                style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }}
-                onError={() => setImgError(true)}
-              />
+              <button onClick={() => setShowModal(true)} style={{ width: "100%", height: "100%", cursor: "pointer", border: "none", padding: 0 }}>
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
+                  src={gdriveDirect(item.url)}
+                  alt={item.title}
+                  style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }}
+                  onError={() => setImgError(true)}
+                />
+              </button>
             )
           ) : (
             <button
@@ -172,6 +214,26 @@ export default function MediaCard({ item, isAdmin }: { item: MediaItem; isAdmin:
 
         {/* Footer */}
         <div className="p-3 flex flex-col gap-1.5">
+          {isAdmin && confirmDelete && (
+            <div className="flex items-center gap-2 mb-1">
+              <span className="text-xs" style={{ color: "#E07B5A" }}>Delete?</span>
+              <button
+                onClick={handleDelete}
+                disabled={deleting}
+                className="text-xs font-semibold px-2 py-0.5 rounded"
+                style={{ background: "#E07B5A", color: "#fff" }}
+              >
+                {deleting ? "…" : "Yes"}
+              </button>
+              <button
+                onClick={() => setConfirmDelete(false)}
+                className="text-xs font-medium"
+                style={{ color: "#A8A29E" }}
+              >
+                Cancel
+              </button>
+            </div>
+          )}
           {isAdmin && editing ? (
             <input
               autoFocus
@@ -192,15 +254,29 @@ export default function MediaCard({ item, isAdmin }: { item: MediaItem; isAdmin:
               {saving ? "Saving…" : title}
             </p>
           )}
-          {item.tags.length > 0 && (
-            <div className="flex flex-wrap gap-1">
-              {item.tags.map((tag) => (
-                <span key={tag} className="px-1.5 py-0.5 rounded-full text-xs" style={{ background: "#F0EBE1", color: "#7A7A7A" }}>
-                  {tag}
-                </span>
-              ))}
-            </div>
-          )}
+          <div className="flex items-start justify-between gap-1">
+            {item.tags.length > 0 && (
+              <div className="flex flex-wrap gap-1">
+                {item.tags.map((tag) => (
+                  <span key={tag} className="px-1.5 py-0.5 rounded-full text-xs" style={{ background: "#F0EBE1", color: "#7A7A7A" }}>
+                    {tag}
+                  </span>
+                ))}
+              </div>
+            )}
+            {isAdmin && !confirmDelete && (
+              <button
+                onClick={() => setConfirmDelete(true)}
+                className="ml-auto shrink-0 text-xs transition-colors"
+                style={{ color: "#D0CBC4" }}
+                onMouseEnter={(e) => (e.currentTarget.style.color = "#E07B5A")}
+                onMouseLeave={(e) => (e.currentTarget.style.color = "#D0CBC4")}
+                title="Delete"
+              >
+                ✕
+              </button>
+            )}
+          </div>
         </div>
       </div>
     </>

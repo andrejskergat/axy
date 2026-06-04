@@ -8,11 +8,16 @@ import MediaCard from "./MediaCard";
 
 export default function DashboardClient({ initialMedia, isAdmin }: { initialMedia: MediaItem[]; isAdmin: boolean }) {
   const [selectedType, setSelectedType] = useState<"all" | "image" | "video">("all");
+  const [media, setMedia] = useState(initialMedia);
 
   const filtered = useMemo(() =>
-    selectedType === "all" ? initialMedia : initialMedia.filter((i) => i.type === selectedType),
-    [initialMedia, selectedType]
+    selectedType === "all" ? media : media.filter((i) => i.type === selectedType),
+    [media, selectedType]
   );
+
+  function handleDeleted(id: string) {
+    setMedia((prev) => prev.filter((i) => i.id !== id));
+  }
 
   return (
     <div className="min-h-screen" style={{ background: "#F0EBE1" }}>
@@ -25,7 +30,7 @@ export default function DashboardClient({ initialMedia, isAdmin }: { initialMedi
             <FilterBar
               selectedType={selectedType}
               onTypeChange={setSelectedType}
-              totalCount={initialMedia.length}
+              totalCount={media.length}
               filteredCount={filtered.length}
             />
             <div className="p-6">
@@ -38,7 +43,7 @@ export default function DashboardClient({ initialMedia, isAdmin }: { initialMedi
                 </div>
               ) : (
                 <div className="grid grid-cols-2 lg:grid-cols-5 gap-4">
-                  {filtered.map((item) => <MediaCard key={item.id} item={item} isAdmin={isAdmin} />)}
+                  {filtered.map((item) => <MediaCard key={item.id} item={item} isAdmin={isAdmin} onDeleted={handleDeleted} />)}
                 </div>
               )}
             </div>
