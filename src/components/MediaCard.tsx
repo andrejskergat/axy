@@ -97,7 +97,7 @@ export default function MediaCard({ item }: { item: MediaItem }) {
         }}
       >
         {/* Media */}
-        <div className="relative w-full overflow-hidden" style={{ background: "#F6F3EE", minHeight: "140px" }}>
+        <div className="relative w-full overflow-hidden" style={{ background: "#F6F3EE", height: "160px" }}>
           {item.type === "image" ? (
             imgError ? (
               <Placeholder label="image" url={item.url} />
@@ -106,8 +106,7 @@ export default function MediaCard({ item }: { item: MediaItem }) {
               <img
                 src={gdriveDirect(item.url)}
                 alt={item.title}
-                className="w-full h-auto object-cover"
-                style={{ display: "block" }}
+                style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }}
                 onError={() => setImgError(true)}
               />
             )
@@ -115,14 +114,13 @@ export default function MediaCard({ item }: { item: MediaItem }) {
             <button
               onClick={() => setShowModal(true)}
               className="block relative w-full text-left"
-              style={{ minHeight: "140px", cursor: "pointer" }}
+              style={{ height: "160px", cursor: "pointer", overflow: "hidden" }}
             >
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
                 src={gdriveThumbnail(item.url)}
                 alt={item.title}
-                className="w-full h-auto object-cover"
-                style={{ display: "block", minHeight: "140px" }}
+                style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }}
                 onError={(e) => { (e.currentTarget as HTMLImageElement).style.visibility = "hidden"; }}
               />
               {/* Play overlay */}
