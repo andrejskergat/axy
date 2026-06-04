@@ -9,14 +9,14 @@ function gdriveDirect(url: string): string {
   return url;
 }
 
-function gdriveEmbed(url: string): string {
+function gdriveFileId(url: string): string | null {
   const match = url.match(/\/file\/d\/([^/]+)/);
-  if (match) return `https://drive.google.com/file/d/${match[1]}/preview`;
-  return url;
+  return match ? match[1] : null;
 }
 
 export default function MediaCard({ item }: { item: MediaItem }) {
-  const [error, setError] = useState(false);
+  const [imgError, setImgError] = useState(false);
+  const fileId = gdriveFileId(item.url);
 
   return (
     <div
@@ -37,24 +37,57 @@ export default function MediaCard({ item }: { item: MediaItem }) {
     >
       {/* Media */}
       <div className="relative w-full overflow-hidden" style={{ background: "#F6F3EE", minHeight: "180px" }}>
-        {error ? (
-          <Placeholder label={item.type} />
-        ) : item.type === "image" ? (
-          // eslint-disable-next-line @next/next/no-img-element
-          <img
-            src={gdriveDirect(item.url)}
-            alt={item.title}
-            className="w-full h-auto object-cover"
-            style={{ display: "block" }}
-            onError={() => setError(true)}
-          />
+        {item.type === "image" ? (
+          imgError || !fileId ? (
+            <Placeholder label="image" url={item.url} />
+          ) : (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img
+              src={gdriveDirect(item.url)}
+              alt={item.title}
+              className="w-full h-auto object-cover"
+              style={{ display: "block" }}
+              onError={() => setImgError(true)}
+            />
+          )
         ) : (
-          <iframe
-            src={gdriveEmbed(item.url)}
-            className="w-full"
-            style={{ minHeight: "220px", border: "none", display: "block" }}
-            allow="autoplay"
-          />
+          /* Videos: show thumbnail + play button that opens in Google Drive */
+          <a
+            href={item.url}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="block relative w-full"
+            style={{ minHeight: "220px" }}
+          >
+            {fileId && (
+              // eslint-disable-next-line @next/next/no-img-element
+              <img
+                src={`https://drive.google.com/thumbnail?id=${fileId}&sz=w800`}
+                alt={item.title}
+                className="w-full h-auto object-cover"
+                style={{ display: "block", minHeight: "220px" }}
+                onError={(e) => { (e.currentTarget as HTMLImageElement).style.display = "none"; }}
+              />
+            )}
+            {/* Play button overlay */}
+            <div
+              className="absolute inset-0 flex items-center justify-center"
+              style={{ background: "rgba(18,33,58,0.35)" }}
+            >
+              <div
+                className="w-14 h-14 rounded-full flex items-center justify-center"
+                style={{ background: "rgba(255,255,255,0.95)", boxShadow: "0 4px 16px rgba(0,0,0,0.3)" }}
+              >
+                <svg className="w-6 h-6 ml-1" style={{ color: "#12213A" }} fill="currentColor" viewBox="0 0 24 24">
+                  <path d="M8 5v14l11-7z" />
+                </svg>
+              </div>
+            </div>
+            {/* Opens in Drive label */}
+            <div className="absolute bottom-2 right-2 px-2 py-0.5 rounded text-xs font-medium" style={{ background: "rgba(0,0,0,0.5)", color: "#fff" }}>
+              Opens in Drive ↗
+            </div>
+          </a>
         )}
 
         {/* Type badge */}
@@ -94,10 +127,16 @@ export default function MediaCard({ item }: { item: MediaItem }) {
   );
 }
 
-function Placeholder({ label }: { label: string }) {
+function Placeholder({ label, url }: { label: string; url: string }) {
   return (
-    <div className="flex items-center justify-center" style={{ minHeight: "180px", color: "#C5BFB5" }}>
-      <span className="text-sm">{label === "video" ? "▶ Video unavailable" : "Image unavailable"}</span>
-    </div>
+    <a
+      href={url}
+      target="_blank"
+      rel="noopener noreferrer"
+      className="flex items-center justify-center"
+      style={{ minHeight: "180px", color: "#A8A29E", textDecoration: "none" }}
+    >
+      <span className="text-sm">{label === "video" ? "▶ Open video" : "Open image"} ↗</span>
+    </a>
   );
 }
