@@ -112,12 +112,20 @@ export default function MediaCard({ item, isAdmin, onDeleted }: { item: MediaIte
 
   async function handleDelete() {
     setDeleting(true);
-    await fetch("/api/delete", {
-      method: "DELETE",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ id: item.id }),
-    });
-    onDeleted?.(item.id);
+    try {
+      const res = await fetch("/api/delete", {
+        method: "DELETE",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ id: item.id }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || "Delete failed");
+      onDeleted?.(item.id);
+    } catch (err: unknown) {
+      setDeleting(false);
+      setConfirmDelete(false);
+      alert(err instanceof Error ? err.message : "Delete failed. Check GITHUB_TOKEN in Vercel.");
+    }
   }
 
   async function saveTitle() {
