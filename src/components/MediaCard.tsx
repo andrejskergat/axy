@@ -159,7 +159,7 @@ export default function MediaCard({ item, isAdmin, onDeleted }: { item: MediaIte
             imgError ? (
               <Placeholder label="image" url={item.url} />
             ) : (
-              <button onClick={() => setShowModal(true)} style={{ width: "100%", height: "100%", cursor: "pointer", border: "none", padding: 0 }}>
+              <button onClick={() => setShowModal(true)} className="group relative" style={{ width: "100%", height: "100%", cursor: "zoom-in", border: "none", padding: 0, display: "block" }}>
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img
                   src={gdriveDirect(item.url)}
@@ -167,6 +167,13 @@ export default function MediaCard({ item, isAdmin, onDeleted }: { item: MediaIte
                   style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }}
                   onError={() => setImgError(true)}
                 />
+                <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity" style={{ background: "rgba(18,33,58,0.25)" }}>
+                  <div className="w-8 h-8 rounded-full flex items-center justify-center" style={{ background: "rgba(255,255,255,0.9)" }}>
+                    <svg className="w-4 h-4" style={{ color: "#12213A" }} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM10 7v3m0 0v3m0-3h3m-3 0H7" />
+                    </svg>
+                  </div>
+                </div>
               </button>
             )
           ) : (
@@ -254,23 +261,21 @@ export default function MediaCard({ item, isAdmin, onDeleted }: { item: MediaIte
               {saving ? "Saving…" : title}
             </p>
           )}
-          <div className="flex items-start justify-between gap-1">
-            {item.tags.length > 0 && (
-              <div className="flex flex-wrap gap-1">
-                {item.tags.map((tag) => (
-                  <span key={tag} className="px-1.5 py-0.5 rounded-full text-xs" style={{ background: "#F0EBE1", color: "#7A7A7A" }}>
-                    {tag}
-                  </span>
-                ))}
-              </div>
-            )}
+          <div className="flex items-center justify-between gap-1 mt-0.5">
+            <div className="flex flex-wrap gap-1 flex-1 min-w-0">
+              {item.tags.map((tag) => (
+                <span key={tag} className="px-1.5 py-0.5 rounded-full text-xs" style={{ background: "#F0EBE1", color: "#7A7A7A" }}>
+                  {tag}
+                </span>
+              ))}
+            </div>
             {isAdmin && !confirmDelete && (
               <button
                 onClick={() => setConfirmDelete(true)}
-                className="ml-auto shrink-0 text-xs transition-colors"
-                style={{ color: "#D0CBC4" }}
-                onMouseEnter={(e) => (e.currentTarget.style.color = "#E07B5A")}
-                onMouseLeave={(e) => (e.currentTarget.style.color = "#D0CBC4")}
+                className="shrink-0 flex items-center justify-center w-6 h-6 rounded-full text-xs font-bold transition-colors"
+                style={{ background: "#F0EBE1", color: "#C5BFB5" }}
+                onMouseEnter={(e) => { e.currentTarget.style.background = "#FDEAE4"; e.currentTarget.style.color = "#E07B5A"; }}
+                onMouseLeave={(e) => { e.currentTarget.style.background = "#F0EBE1"; e.currentTarget.style.color = "#C5BFB5"; }}
                 title="Delete"
               >
                 ✕
