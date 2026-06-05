@@ -66,10 +66,13 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: "Type must be image or video" }, { status: 400 });
   }
 
-  // Detect mime type for videos to handle MOV vs MP4
+  // Detect mime type and block MOV
   let mimeType: string | undefined;
   if (type === "video") {
     mimeType = await getDriveMimeType(url) ?? undefined;
+    if (mimeType === "video/quicktime") {
+      return NextResponse.json({ error: "MOV files are not supported. Please convert to MP4 before uploading." }, { status: 400 });
+    }
   }
 
   const existing = getMediaData();

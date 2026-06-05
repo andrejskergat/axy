@@ -67,9 +67,12 @@ export default function AdminClient() {
 
       <div className="max-w-xl mx-auto px-6 py-10">
         <h1 className="text-2xl font-bold mb-1" style={{ color: "#12213A" }}>Add a Creative</h1>
-        <p className="text-sm mb-8" style={{ color: "#9A9A9A" }}>
+        <p className="text-sm mb-4" style={{ color: "#9A9A9A" }}>
           Upload to Google Drive → right-click → Share → <strong>Anyone with the link</strong> → paste URL below.
         </p>
+        <div className="rounded-xl px-4 py-3 mb-6 text-sm" style={{ background: "#FEF3EE", border: "1px solid #F5C9B3", color: "#C05A2A" }}>
+          <strong>Videos must be MP4.</strong> MOV files cannot be embedded or protected. Convert to MP4 before uploading.
+        </div>
 
         <div className="rounded-2xl p-8" style={{ background: "#fff", border: "1px solid rgba(18,33,58,0.08)", boxShadow: "0 2px 12px rgba(18,33,58,0.06)" }}>
           <form onSubmit={handleSubmit} className="space-y-4">
