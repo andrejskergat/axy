@@ -83,18 +83,29 @@ function VideoModal({ item, onClose }: { item: MediaItem; onClose: () => void })
           />
         </div>
 
-        {/* Title */}
-        <div className="px-4 py-3" style={{ background: "#111" }}>
-          <p className="text-sm font-semibold text-white">{item.title}</p>
-          {item.tags.length > 0 && (
-            <div className="flex gap-1.5 mt-1.5 flex-wrap">
-              {item.tags.map((tag) => (
-                <span key={tag} className="px-2 py-0.5 rounded-full text-xs" style={{ background: "rgba(255,255,255,0.08)", color: "#aaa" }}>
-                  {tag}
-                </span>
-              ))}
-            </div>
-          )}
+        {/* Title + fallback */}
+        <div className="px-4 py-3 flex items-center justify-between gap-4" style={{ background: "#111" }}>
+          <div>
+            <p className="text-sm font-semibold text-white">{item.title}</p>
+            {item.tags.length > 0 && (
+              <div className="flex gap-1.5 mt-1.5 flex-wrap">
+                {item.tags.map((tag) => (
+                  <span key={tag} className="px-2 py-0.5 rounded-full text-xs" style={{ background: "rgba(255,255,255,0.08)", color: "#aaa" }}>
+                    {tag}
+                  </span>
+                ))}
+              </div>
+            )}
+          </div>
+          <a
+            href={item.url}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="shrink-0 text-xs font-medium px-3 py-1.5 rounded-lg transition-colors"
+            style={{ background: "rgba(255,255,255,0.08)", color: "rgba(255,255,255,0.6)" }}
+          >
+            Open in Drive ↗
+          </a>
         </div>
       </div>
     </div>
