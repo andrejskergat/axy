@@ -199,7 +199,7 @@ export default function MediaCard({ item, isAdmin, onDeleted }: { item: MediaIte
             )
           ) : (
             <button
-              onClick={() => setShowModal(true)}
+              onClick={() => item.mimeType === "video/quicktime" ? window.open(item.url, "_blank") : setShowModal(true)}
               className="block relative w-full text-left"
               style={{ height: "160px", cursor: "pointer", overflow: "hidden" }}
             >

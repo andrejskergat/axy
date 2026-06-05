@@ -29,6 +29,22 @@ async function writeMediaJson(items: MediaItem[]): Promise<void> {
   );
 }
 
+async function getDriveMimeType(url: string): Promise<string | null> {
+  try {
+    const match = url.match(/\/file\/d\/([^/]+)/);
+    if (!match) return null;
+    const fileId = match[1];
+    const res = await fetch(
+      `https://www.googleapis.com/drive/v3/files/${fileId}?fields=mimeType&key=${process.env.GOOGLE_API_KEY}`
+    );
+    if (!res.ok) return null;
+    const data = await res.json();
+    return data.mimeType || null;
+  } catch {
+    return null;
+  }
+}
+
 export async function POST(request: NextRequest) {
   const sessionPassword = request.cookies.get(SESSION_COOKIE)?.value;
   if (!sessionPassword || !validateSession(sessionPassword).valid) {
@@ -50,6 +66,12 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: "Type must be image or video" }, { status: 400 });
   }
 
+  // Detect mime type for videos to handle MOV vs MP4
+  let mimeType: string | undefined;
+  if (type === "video") {
+    mimeType = await getDriveMimeType(url) ?? undefined;
+  }
+
   const existing = getMediaData();
   const newItem: MediaItem = {
     id: String(Date.now()),
@@ -57,6 +79,7 @@ export async function POST(request: NextRequest) {
     client: client || "",
     type,
     url,
+    ...(mimeType ? { mimeType } : {}),
     tags: Array.isArray(tags) ? tags : [],
   };
 

@@ -13,6 +13,7 @@ export interface MediaItem {
   client: string;
   type: "image" | "video";
   url: string;
+  mimeType?: string;
   tags: string[];
 }
 
