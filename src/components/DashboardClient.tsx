@@ -50,6 +50,14 @@ export default function DashboardClient({ initialMedia, isAdmin }: { initialMedi
           </>
         )}
       </main>
+      <footer className="mx-auto w-full max-w-5xl px-6 pb-8 pt-6 mt-8 border-t" style={{ borderColor: "rgba(18,33,58,0.12)" }}>
+        <p className="text-xs font-semibold mb-2" style={{ color: "#12213A" }}>Confidentiality Notice</p>
+        <div className="space-y-2 text-xs leading-relaxed" style={{ color: "#7A7A7A" }}>
+          <p>SocialFin provides access to this portfolio solely for the authorised recipient’s private review. The portfolio contains client work and confidential materials.</p>
+          <p>You must not copy, download, screenshot, record, reproduce, publish, distribute or otherwise share any materials without SocialFin’s prior written permission. You must not share the access link or password with anyone else.</p>
+          <p>All intellectual property rights remain with their respective owners. Access does not grant permission to reuse or adapt any materials.</p>
+        </div>
+      </footer>
     </div>
   );
 }
