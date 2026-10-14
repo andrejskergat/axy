@@ -2,7 +2,6 @@
 
 import { useState, FormEvent } from "react";
 import { useRouter } from "next/navigation";
-import Image from "next/image";
 
 export default function LoginPage() {
   const router = useRouter();
@@ -41,7 +40,8 @@ export default function LoginPage() {
         {/* Logo */}
         <div className="text-center mb-10">
           <div className="flex justify-center mb-3">
-            <Image src="/socialfin-logo.webp" alt="SocialFin" width={160} height={48} style={{ height: "40px", width: "auto" }} priority />
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src="/socialfin-logo.webp?v=2" alt="SocialFin" width={160} height={48} style={{ height: "40px", width: "auto", objectFit: "contain", display: "block" }} />
           </div>
           <p className="text-sm mt-2" style={{ color: "#7A7A7A" }}>
             Confidential Client Creatives
