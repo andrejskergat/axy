@@ -2,6 +2,7 @@
 
 import { useState, FormEvent } from "react";
 import { useRouter } from "next/navigation";
+import Image from "next/image";
 
 export default function LoginPage() {
   const router = useRouter();
@@ -38,9 +39,9 @@ export default function LoginPage() {
       <div className="w-full max-w-sm">
         {/* Logo */}
         <div className="text-center mb-10">
-          <span className="text-3xl font-bold tracking-tight" style={{ color: "#12213A" }}>
-            <span style={{ color: "#1B6BF0" }}>social</span>fin
-          </span>
+          <div className="flex justify-center mb-3">
+            <Image src="/socialfin-logo.webp" alt="SocialFin" width={160} height={48} style={{ height: "40px", width: "auto" }} priority />
+          </div>
           <p className="text-sm mt-2" style={{ color: "#7A7A7A" }}>
             Confidential Client Creatives
           </p>

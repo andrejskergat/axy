@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import Image from "next/image";
 
 interface FormState {
   title: string;
@@ -58,10 +59,10 @@ export default function AdminClient() {
         className="sticky top-0 z-10 flex items-center justify-between px-6 py-4"
         style={{ background: "rgba(240,235,225,0.92)", backdropFilter: "blur(12px)", borderBottom: "1px solid rgba(18,33,58,0.08)" }}
       >
-        <span className="text-xl font-bold" style={{ color: "#12213A" }}>
-          <span style={{ color: "#1B6BF0" }}>social</span>fin
-          <span className="text-sm font-normal ml-2" style={{ color: "#A8A29E" }}>/ Add Creative</span>
-        </span>
+        <div className="flex items-center gap-2">
+          <Image src="/socialfin-logo.webp" alt="SocialFin" width={100} height={30} style={{ height: "24px", width: "auto" }} priority />
+          <span className="text-sm font-normal" style={{ color: "#A8A29E" }}>/ Add Creative</span>
+        </div>
         <Link href="/" className="text-sm font-medium" style={{ color: "#7A7A7A" }}>← Dashboard</Link>
       </header>
 

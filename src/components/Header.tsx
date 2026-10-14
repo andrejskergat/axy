@@ -3,6 +3,7 @@
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import Link from "next/link";
+import Image from "next/image";
 
 export default function Header({ isAdmin }: { isAdmin: boolean }) {
   const router = useRouter();
@@ -29,9 +30,7 @@ export default function Header({ isAdmin }: { isAdmin: boolean }) {
       }}
     >
       <div className="flex items-center gap-3">
-        <span className="text-xl font-bold tracking-tight" style={{ color: "#12213A" }}>
-          <span style={{ color: "#1B6BF0" }}>social</span>fin
-        </span>
+        <Image src="/socialfin-logo.webp" alt="SocialFin" width={120} height={36} style={{ height: "28px", width: "auto" }} priority />
         <span className="text-xs font-medium px-2 py-0.5 rounded-full" style={{ background: "rgba(27,107,240,0.08)", color: "#1B6BF0" }}>
           Ad Creatives Library
         </span>
