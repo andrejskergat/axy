@@ -13,7 +13,7 @@ if (!adminPassword || !clientPassword) {
 }
 
 const now = new Date();
-const expiresAt = new Date(now.getTime() + 72 * 60 * 60 * 1000);
+const expiresAt = new Date(now.getTime() + 48 * 60 * 60 * 1000);
 
 const authData = { adminPassword, clientPassword, expiresAt: expiresAt.toISOString() };
 
