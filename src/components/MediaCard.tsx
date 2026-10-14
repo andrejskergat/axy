@@ -74,51 +74,17 @@ function VideoModal({ item, onClose }: { item: MediaItem; onClose: () => void })
           ✕
         </button>
 
-        {isMov ? (
-          <div className="flex flex-col items-center justify-center gap-5 py-16 px-8">
-            <div className="w-16 h-16 rounded-full flex items-center justify-center" style={{ background: "rgba(255,255,255,0.08)" }}>
-              <svg className="w-7 h-7 text-white" fill="currentColor" viewBox="0 0 24 24">
-                <path d="M8 5v14l11-7z" />
-              </svg>
-            </div>
-            <div className="text-center">
-              <p className="text-white font-semibold mb-1">{item.title}</p>
-              <p className="text-sm" style={{ color: "rgba(255,255,255,0.4)" }}>This video format can't play in the browser</p>
-            </div>
-            <a
-              href={item.url}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="px-6 py-3 rounded-xl font-semibold text-sm text-white transition-colors"
-              style={{ background: "#1B6BF0" }}
-            >
-              Open in Google Drive ↗
-            </a>
-          </div>
-        ) : (
-          <div style={{ paddingTop: "56.25%", position: "relative" }}>
-            <iframe
-              src={gdriveEmbed(item.url)}
-              allow="autoplay"
-              allowFullScreen
-              style={{ position: "absolute", inset: 0, width: "100%", height: "100%", border: "none" }}
-            />
-          </div>
-        )}
+        <div style={{ paddingTop: "56.25%", position: "relative" }}>
+          <iframe
+            src={gdriveEmbed(item.url)}
+            allow="autoplay"
+            allowFullScreen
+            style={{ position: "absolute", inset: 0, width: "100%", height: "100%", border: "none" }}
+          />
+        </div>
 
-        <div className="px-4 py-3 flex items-center justify-between gap-4" style={{ background: "#111" }}>
+        <div className="px-4 py-3" style={{ background: "#111" }}>
           <p className="text-sm font-semibold text-white">{item.title}</p>
-          {!isMov && (
-            <a
-              href={item.url}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="shrink-0 text-xs font-medium px-3 py-1.5 rounded-lg"
-              style={{ background: "rgba(255,255,255,0.08)", color: "rgba(255,255,255,0.6)" }}
-            >
-              Open in Drive ↗
-            </a>
-          )}
         </div>
       </div>
     </div>
