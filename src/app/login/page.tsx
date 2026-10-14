@@ -9,6 +9,7 @@ export default function LoginPage() {
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+  const [agreed, setAgreed] = useState(false);
 
   async function handleSubmit(e: FormEvent) {
     e.preventDefault();
@@ -83,16 +84,27 @@ export default function LoginPage() {
               <p className="text-sm" style={{ color: "#E07B5A" }}>{error}</p>
             )}
 
+            <label className="flex items-start gap-3 text-xs leading-relaxed cursor-pointer" style={{ color: "#5F6470" }}>
+              <input
+                type="checkbox"
+                checked={agreed}
+                onChange={(e) => setAgreed(e.target.checked)}
+                required
+                className="mt-0.5 h-4 w-4 shrink-0 accent-[#1B6BF0]"
+              />
+              <span>I have read the confidentiality notice and agree not to copy or share the materials, access link or password.</span>
+            </label>
+
             <button
               type="submit"
-              disabled={loading || !password}
+              disabled={loading || !password || !agreed}
               className="w-full py-3 rounded-lg font-semibold text-sm text-white transition-all duration-200"
               style={{
-                background: loading || !password ? "#A0B4E0" : "#1B6BF0",
-                cursor: loading || !password ? "not-allowed" : "pointer",
+                background: loading || !password || !agreed ? "#A0B4E0" : "#1B6BF0",
+                cursor: loading || !password || !agreed ? "not-allowed" : "pointer",
               }}
             >
-              {loading ? "Verifying…" : "Access Dashboard →"}
+              {loading ? "Verifying…" : "View Portfolio →"}
             </button>
           </form>
         </div>
