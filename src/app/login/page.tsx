@@ -58,7 +58,7 @@ export default function LoginPage() {
         >
           <h2 className="text-lg font-semibold mb-1" style={{ color: "#12213A" }}>Enter your password</h2>
           <p className="text-sm mb-6" style={{ color: "#9A9A9A" }}>
-            This link expires 72 hours after it was shared.
+            This link expires 48 hours after it was shared.
           </p>
 
           <form onSubmit={handleSubmit} className="space-y-4">
