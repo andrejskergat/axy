@@ -86,7 +86,7 @@ export async function POST(request: NextRequest) {
     tags: Array.isArray(tags) ? tags : [],
   };
 
-  await writeMediaJson([...existing, newItem]);
+  await writeMediaJson([newItem, ...existing]);
 
   return NextResponse.json({ success: true, item: newItem });
 }
