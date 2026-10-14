@@ -11,7 +11,7 @@ function gdriveThumbnail(url: string): string {
 
 function gdriveEmbed(url: string): string {
   const match = url.match(/\/file\/d\/([^/]+)/);
-  if (match) return `https://drive.google.com/file/d/${match[1]}/preview`;
+  if (match) return `https://drive.google.com/file/d/${match[1]}/preview?rm=minimal`;
   return url;
 }
 
@@ -78,7 +78,6 @@ function VideoModal({ item, onClose }: { item: MediaItem; onClose: () => void })
           <iframe
             src={gdriveEmbed(item.url)}
             allow="autoplay"
-            allowFullScreen
             style={{ position: "absolute", inset: 0, width: "100%", height: "100%", border: "none" }}
           />
         </div>
